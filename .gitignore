@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+
+# Database — local file, should not be versioned
+*.db
+
+# VSCode
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
