@@ -75,8 +75,8 @@ showing transferable knowledge rather than familiarity with a single tool.
 ## Running locally
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/tlim-python.git
-cd tlim-python
+git clone https://github.com/your-username/tlim-python2.git
+cd tlim-python2
 
 # Create and activate virtual environment
 python3 -m venv venv
