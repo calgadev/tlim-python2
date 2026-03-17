@@ -35,13 +35,13 @@ showing transferable knowledge rather than familiarity with a single tool.
 - [x] User
 - [x] Server
 - [x] Character
-- [ ] Item
-- [ ] Creature
-- [ ] ServerItemPrice
-- [ ] Inventory
-- [ ] HuntSession
-- [ ] HuntSessionItem
-- [ ] HuntSessionMonster
+- [x] Item
+- [x] Creature
+- [x] ServerItemPrice
+- [x] Inventory
+- [x] HuntSession
+- [x] HuntSessionItem
+- [x] HuntSessionMonster
 
 ### Seed Data
 - [ ] Servers
