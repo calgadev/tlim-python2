@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Edit character</h2>
+            <a href="/characters/?user_id={{ user_id }}"
+               class="btn btn-outline-secondary btn-sm">← Back to characters</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="/characters/{{ character.id }}/edit">
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text"
+                               class="form-control"
+                               id="name"
+                               name="name"
+                               value="{{ character.name }}"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="server_id" class="form-label">Server</label>
+                        <select class="form-select" id="server_id" name="server_id" required>
+                            {% for server in servers %}
+                            <option value="{{ server.id }}"
+                                {% if server.id == character.server_id %}selected{% endif %}>
+                                {{ server.name }} ({{ server.type.value }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="vocation" class="form-label">Vocation</label>
+                        <select class="form-select" id="vocation" name="vocation">
+                            <option value=""
+                                {% if character.vocation is none %}selected{% endif %}>
+                                Rookie
+                            </option>
+                            {% for vocation in vocations %}
+                            <option value="{{ vocation.value }}"
+                                {% if character.vocation == vocation %}selected{% endif %}>
+                                {{ vocation.value }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                        <a href="/characters/?user_id={{ user_id }}"
+                           class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

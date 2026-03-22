@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>{{ user.name }}'s characters</h2>
+            <a href="/users/" class="btn btn-outline-secondary btn-sm">← Back to users</a>
+        </div>
+
+        <!-- Existing characters list -->
+        {% if characters %}
+        <div class="list-group mb-4">
+            {% for character in characters %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ character.name }}</strong>
+                    <span class="text-muted ms-2">
+                        {% if character.vocation %}
+                            {{ character.vocation.value }}
+                        {% else %}
+                            Rookie
+                        {% endif %}
+                    </span>
+                    <span class="text-muted ms-2">— {{ character.server.name }}</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/characters/{{ character.id }}/edit?user_id={{ user_id }}"
+                       class="btn btn-outline-secondary btn-sm">Edit</a>
+                    <a href="/characters/{{ character.id }}?user_id={{ user_id }}"
+                       class="btn btn-primary btn-sm">Select →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted mb-4">No characters yet. Create one below.</p>
+        {% endif %}
+
+        <!-- Create new character form -->
+        <div class="card">
+            <div class="card-header">New character</div>
+            <div class="card-body">
+                <form method="post" action="/characters/">
+                    <input type="hidden" name="user_id" value="{{ user_id }}">
+
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text"
+                               class="form-control"
+                               id="name"
+                               name="name"
+                               placeholder="2-30 characters, letters and spaces only"
+                               required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="server_id" class="form-label">Server</label>
+                        <select class="form-select" id="server_id" name="server_id" required>
+                            <option value="" disabled selected>Select a server</option>
+                            {% for server in servers %}
+                            <option value="{{ server.id }}">
+                                {{ server.name }} ({{ server.type.value }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="vocation" class="form-label">Vocation</label>
+                        <select class="form-select" id="vocation" name="vocation">
+                            <option value="">Rookie</option>
+                            {% for vocation in vocations %}
+                            <option value="{{ vocation.value }}">{{ vocation.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create character</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
