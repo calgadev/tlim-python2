@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>{{ session.name }}</h2>
+            <a href="/hunt/history?user_id={{ user_id }}&character_id={{ character_id }}"
+               class="btn btn-outline-secondary btn-sm">← Back to history</a>
+        </div>
+
+        <!-- Session summary -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">Session info</div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td class="text-muted">Start</td>
+                                <td>{{ session.session_start.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">End</td>
+                                <td>{{ session.session_end.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Duration</td>
+                                <td>{{ session.duration }}</td>
+                            </tr>
+                            {% if session.location %}
+                            <tr>
+                                <td class="text-muted">Location</td>
+                                <td>{{ session.location }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <td class="text-muted">Type</td>
+                                <td>{{ 'Party' if session.is_party else 'Solo' }}</td>
+                            </tr>
+                            {% if session.char_level %}
+                            <tr>
+                                <td class="text-muted">Level</td>
+                                <td>{{ session.char_level }}</td>
+                            </tr>
+                            {% endif %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">Performance</div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-0">
+                            <tr>
+                                <td class="text-muted">Loot</td>
+                                <td>{{ '{:,}'.format(session.loot_total) }} gp</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Supplies</td>
+                                <td>{{ '{:,}'.format(session.supplies) }} gp</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Balance</td>
+                                <td class="{{ 'text-success' if balance >= 0 else 'text-danger' }}">
+                                    {{ '{:,}'.format(balance) }} gp
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Raw XP</td>
+                                <td>{{ '{:,}'.format(session.raw_xp) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">XP with bonus</td>
+                                <td>{{ '{:,}'.format(session.xp_with_bonus) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Damage</td>
+                                <td>{{ '{:,}'.format(session.damage) }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">Healing</td>
+                                <td>{{ '{:,}'.format(session.healing) }}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ally levels — only shown for party hunts with at least one level filled -->
+        {% if session.is_party and (session.ally_ek_level or session.ally_ms_level or session.ally_ed_level or session.ally_rp_level or session.ally_em_level) %}
+        <div class="card mb-4">
+            <div class="card-header">Ally levels</div>
+            <div class="card-body">
+                <div class="row g-2 text-center">
+                    {% if session.ally_ek_level %}
+                    <div class="col"><span class="text-muted">EK</span><br>{{ session.ally_ek_level }}</div>
+                    {% endif %}
+                    {% if session.ally_ms_level %}
+                    <div class="col"><span class="text-muted">MS</span><br>{{ session.ally_ms_level }}</div>
+                    {% endif %}
+                    {% if session.ally_ed_level %}
+                    <div class="col"><span class="text-muted">ED</span><br>{{ session.ally_ed_level }}</div>
+                    {% endif %}
+                    {% if session.ally_rp_level %}
+                    <div class="col"><span class="text-muted">RP</span><br>{{ session.ally_rp_level }}</div>
+                    {% endif %}
+                    {% if session.ally_em_level %}
+                    <div class="col"><span class="text-muted">EM</span><br>{{ session.ally_em_level }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Monsters killed -->
+        <div class="card mb-4">
+            <div class="card-header">Monsters killed</div>
+            <div class="card-body">
+                {% if session.monsters %}
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Creature</th>
+                            <th class="text-end">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for monster in session.monsters | sort(attribute='quantity', reverse=True) %}
+                        <tr>
+                            <td>{{ monster.creature.name }}</td>
+                            <td class="text-end">{{ monster.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted mb-0">No monsters recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Looted items -->
+        <div class="card mb-4">
+            <div class="card-header">Looted items</div>
+            <div class="card-body">
+                {% if session.items %}
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="text-end">Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in session.items | sort(attribute='quantity', reverse=True) %}
+                        <tr>
+                            <td>{{ item.item.name }}</td>
+                            <td class="text-end">{{ item.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p class="text-muted mb-0">No items recorded.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if session.notes %}
+        <div class="card mb-4">
+            <div class="card-header">Notes</div>
+            <div class="card-body">{{ session.notes }}</div>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

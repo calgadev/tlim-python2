@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Import hunt — {{ character.name }}</h2>
+            <a href="/hunt/history?user_id={{ user_id }}&character_id={{ character_id }}"
+               class="btn btn-outline-secondary btn-sm">View history</a>
+        </div>
+
+        <form method="post" action="/hunt/?user_id={{ user_id }}&character_id={{ character_id }}"
+              enctype="multipart/form-data">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+
+            <!-- Hunt log input -->
+            <div class="card mb-3">
+                <div class="card-header">Hunt log</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="raw_text" class="form-label">Paste text from Hunt Analyser</label>
+                        <textarea class="form-control" id="raw_text" name="raw_text"
+                                  rows="8" placeholder="Session data: From 2026-03-16, 17:14:36 to..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="json_file" class="form-label">Or upload JSON file</label>
+                        <input class="form-control" type="file" id="json_file"
+                               name="json_file" accept=".json">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session details -->
+            <div class="card mb-3">
+                <div class="card-header">Session details</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Session name</label>
+                        <input type="text" class="form-control" id="name" name="name"
+                               placeholder="e.g. Rotworms tuesday — leave blank for auto-generated name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location"
+                               placeholder="e.g. Orc Fortress">
+                    </div>
+                    <div class="mb-3">
+                        <label for="char_level" class="form-label">Character level</label>
+                        <input type="number" class="form-control" id="char_level"
+                               name="char_level" min="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"
+                                  placeholder="Any observations about this hunt..."></textarea>
+                    </div>
+
+                    <!-- is_party checkbox -->
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="is_party"
+                               name="is_party" onchange="toggleAllyFields()">
+                        <label class="form-check-label" for="is_party">Party hunt</label>
+                    </div>
+
+                    <!-- Ally level fields — hidden until is_party is checked -->
+                    <div id="ally_fields" style="display: none;">
+                        <p class="text-muted mb-2">Ally levels (optional)</p>
+                        <div class="row g-2">
+                            <div class="col">
+                                <label class="form-label">EK</label>
+                                <input type="number" class="form-control"
+                                       name="ally_ek_level" min="1">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">MS</label>
+                                <input type="number" class="form-control"
+                                       name="ally_ms_level" min="1">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">ED</label>
+                                <input type="number" class="form-control"
+                                       name="ally_ed_level" min="1">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">RP</label>
+                                <input type="number" class="form-control"
+                                       name="ally_rp_level" min="1">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">EM</label>
+                                <input type="number" class="form-control"
+                                       name="ally_em_level" min="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Import hunt</button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    function toggleAllyFields() {
+        // Show or hide ally level fields based on the is_party checkbox state.
+        const checkbox = document.getElementById("is_party");
+        const allyFields = document.getElementById("ally_fields");
+        allyFields.style.display = checkbox.checked ? "block" : "none";
+    }
+</script>
+{% endblock %}

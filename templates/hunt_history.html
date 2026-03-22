@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Hunt history — {{ character.name }}</h2>
+            <a href="/hunt/?user_id={{ user_id }}&character_id={{ character_id }}"
+               class="btn btn-primary btn-sm">+ Import hunt</a>
+        </div>
+
+        <!-- Location filter -->
+        <form method="get" action="/hunt/history" class="mb-4">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="location"
+                       placeholder="Filter by location..."
+                       value="{{ location_filter or '' }}">
+                <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                {% if location_filter %}
+                <a href="/hunt/history?user_id={{ user_id }}&character_id={{ character_id }}"
+                   class="btn btn-outline-danger">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if sessions %}
+        <div class="list-group">
+            {% for session in sessions %}
+            <a href="/hunt/{{ session.id }}?user_id={{ user_id }}&character_id={{ character_id }}"
+               class="list-group-item list-group-item-action">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <strong>{{ session.name }}</strong>
+                        {% if session.location %}
+                        <span class="text-muted ms-2">— {{ session.location }}</span>
+                        {% endif %}
+                        {% if session.is_party %}
+                        <span class="badge bg-secondary ms-2">Party</span>
+                        {% endif %}
+                    </div>
+                    <div class="text-end text-muted small">
+                        {{ session.session_start.strftime('%d/%m/%Y %H:%M') }}
+                        <span class="ms-2">{{ session.duration }}</span>
+                    </div>
+                </div>
+                <div class="mt-1 small text-muted">
+                    Balance:
+                    {% set balance = session.loot_total - session.supplies %}
+                    <span class="{{ 'text-success' if balance >= 0 else 'text-danger' }}">
+                        {{ '{:,}'.format(balance) }} gp
+                    </span>
+                    · XP: {{ '{:,}'.format(session.xp_with_bonus) }}
+                    · Loot: {{ '{:,}'.format(session.loot_total) }} gp
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-muted">
+            {% if location_filter %}
+            No hunts found for location "{{ location_filter }}".
+            {% else %}
+            No hunts imported yet.
+            {% endif %}
+        </p>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
