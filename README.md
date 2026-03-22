@@ -91,6 +91,15 @@ uvicorn main:app --reload
 
 Access at `http://127.0.0.1:8000`
 
+## Stage 2 — Planned additions
+
+- TibiaWiki scraping for complete item and creature catalog
+- Mini wiki for creatures: resistances, weaknesses, immunities, XP, hunting locations, possible loot
+- Mini wiki for items: description, weight, NPC buyers, drop sources
+- Cross-links between creature and item wiki pages
+- npc_seller data via separate item_npc_prices table
+- Authentication with password
+
 ---
 
 ## Sobre o projeto (português)
