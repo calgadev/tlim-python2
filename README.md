@@ -49,10 +49,10 @@ showing transferable knowledge rather than familiarity with a single tool.
 - [x] Creatures
 
 ### User & Character Management
-- [ ] Router: users
-- [ ] Router: characters
-- [ ] Template: user selection screen
-- [ ] Template: character registration and listing
+- [x] Router: users
+- [x] Router: characters
+- [x] Template: user selection screen
+- [x] Template: character registration and listing
 
 ### Hunt Import
 - [ ] Parser: shared ParsedHunt dataclass
