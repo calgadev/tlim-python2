@@ -19,6 +19,8 @@ class Server(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    # SQLAlchemy stores the Enum member name (e.g. "OPTIONAL_PVP").
+    # Use server.type.value in templates to display the readable label (e.g. "Optional PvP").
     type: Mapped[ServerType] = mapped_column(Enum(ServerType), nullable=False)
 
     # Populated by SQLAlchemy when accessing server.characters.

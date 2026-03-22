@@ -44,9 +44,9 @@ showing transferable knowledge rather than familiarity with a single tool.
 - [x] HuntSessionMonster
 
 ### Seed Data
-- [ ] Servers
-- [ ] Items
-- [ ] Creatures
+- [x] Servers
+- [x] Items
+- [x] Creatures
 
 ### User & Character Management
 - [ ] Router: users
