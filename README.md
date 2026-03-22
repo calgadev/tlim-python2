@@ -55,14 +55,14 @@ showing transferable knowledge rather than familiarity with a single tool.
 - [x] Template: character registration and listing
 
 ### Hunt Import
-- [ ] Parser: shared ParsedHunt dataclass
-- [ ] Parser: text format (Hunt Analyser)
-- [ ] Parser: JSON format (Hunt Analyser)
-- [ ] Service: hunt import and persistence
-- [ ] Router: hunt
-- [ ] Template: hunt import (text paste and JSON upload)
-- [ ] Template: hunt history
-- [ ] Template: hunt detail
+- [x] Parser: shared ParsedHunt dataclass
+- [x] Parser: text format (Hunt Analyser)
+- [x] Parser: JSON format (Hunt Analyser)
+- [x] Service: hunt import and persistence
+- [x] Router: hunt
+- [x] Template: hunt import (text paste and JSON upload)
+- [x] Template: hunt history
+- [x] Template: hunt detail
 
 ### Inventory & Sale Decision Engine
 - [ ] Service: sale decision engine
