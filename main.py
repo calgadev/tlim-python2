@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from database import engine, Base
 import models
 
-from routers import users, characters, hunt
+from routers import inventory, users, characters, hunt
 
 Base.metadata.create_all(bind=engine)
 
@@ -15,6 +15,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 app.include_router(users.router)
 app.include_router(characters.router)
 app.include_router(hunt.router)
+app.include_router(inventory.router)
 
 @app.get("/")
 def root():

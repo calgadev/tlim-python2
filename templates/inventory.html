@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Inventory — {{ character.name }}</h2>
+            <a href="/hunt/?user_id={{ user_id }}&character_id={{ character_id }}"
+               class="btn btn-primary btn-sm">Import hunt</a>
+        </div>
+
+        <!-- Summary cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-1">Passive gold</h6>
+                        <h4 class="text-success mb-0">{{ '{:,}'.format(passive_gold) }} gp</h4>
+                        <small class="text-muted">surplus × best price</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h6 class="text-muted mb-1">Gross value</h6>
+                        <h4 class="mb-0">{{ '{:,}'.format(gross_value) }} gp</h4>
+                        <small class="text-muted">total inventory × best price</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and sorting -->
+        <form method="get" action="/inventory/" class="mb-4">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <div class="row g-2">
+                <div class="col-md-4">
+                    <select class="form-select" name="decision_filter">
+                        <option value="">All decisions</option>
+                        {% for d in sale_decisions %}
+                        <option value="{{ d.name }}"
+                            {% if decision_filter == d.name %}selected{% endif %}>
+                            {{ d.value }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <select class="form-select" name="sort_by">
+                        <option value="">Sort by decision</option>
+                        <option value="value" {% if sort_by == 'value' %}selected{% endif %}>
+                            Sort by value
+                        </option>
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>
+                            Sort by name
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-secondary w-100">Apply</button>
+                </div>
+                {% if decision_filter or sort_by %}
+                <div class="col-md-2">
+                    <a href="/inventory/?user_id={{ user_id }}&character_id={{ character_id }}"
+                       class="btn btn-outline-danger w-100">Clear</a>
+                </div>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if decisions %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="text-end">Stock</th>
+                        <th class="text-end">Goal</th>
+                        <th class="text-end">Surplus</th>
+                        <th class="text-end">NPC price</th>
+                        <th class="text-end">Market price</th>
+                        <th>Decision</th>
+                        <th class="text-end">Est. value</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in decisions %}
+                    <tr>
+                        <td>
+                            {{ d.item_name }}
+                            {% if d.is_task_item %}
+                            <span class="badge bg-warning text-dark ms-1"
+                                  title="This item can be delivered in a weekly task">task</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">{{ d.current_quantity }}</td>
+                        <td class="text-end">{{ d.goal_quantity if d.goal_quantity is not none else '—' }}</td>
+                        <td class="text-end">{{ d.surplus_quantity }}</td>
+                        <td class="text-end">
+                            {{ '{:,}'.format(d.npc_price) if d.npc_price else '—' }}
+                        </td>
+                        <td class="text-end">
+                            {{ '{:,}'.format(d.market_price) if d.market_price else '—' }}
+                        </td>
+                        <td>
+                            {% if d.decision.name == 'SELL_NPC' %}
+                                <span class="badge bg-success">{{ d.decision.value }}</span>
+                            {% elif d.decision.name == 'SELL_MARKET' %}
+                                <span class="badge bg-primary">{{ d.decision.value }}</span>
+                            {% elif d.decision.name == 'KEEP' %}
+                                <span class="badge bg-secondary">{{ d.decision.value }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ d.decision.value }}</span>
+                            {% endif %}
+                            {% if d.missing_market_price %}
+                            <span class="text-warning ms-1"
+                                  title="Market price not registered for this server">⚠</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {{ '{:,}'.format(d.estimated_value) if d.estimated_value else '—' }}
+                        </td>
+                        <td>
+                            <!-- Edit goal button -->
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    onclick="toggleGoalForm({{ d.item_id }})">Edit goal</button>
+
+                            <!-- Inline goal form — hidden by default -->
+                            <div id="goal_form_{{ d.item_id }}" style="display:none; margin-top: 8px;">
+                                <form method="post"
+                                      action="/inventory/{{ d.item_id }}/goal"
+                                      class="d-flex gap-1">
+                                    <input type="hidden" name="user_id" value="{{ user_id }}">
+                                    <input type="hidden" name="character_id" value="{{ character_id }}">
+                                    <input type="number" class="form-control form-control-sm"
+                                           name="goal_quantity"
+                                           value="{{ d.goal_quantity if d.goal_quantity is not none else '' }}"
+                                           placeholder="Goal"
+                                           min="0"
+                                           style="width: 80px;">
+                                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                            onclick="toggleGoalForm({{ d.item_id }})">Cancel</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No items in inventory yet. Import a hunt to get started.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function toggleGoalForm(itemId) {
+        // Show or hide the goal editing form for a specific item.
+        const form = document.getElementById("goal_form_" + itemId);
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+</script>
+{% endblock %}
