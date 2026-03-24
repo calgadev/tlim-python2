@@ -2,10 +2,13 @@ import json
 import models 
 from pathlib import Path
 
-from database import SessionLocal
+from database import SessionLocal, engine, Base
 from models.server import Server, ServerType
 from models.item import Item
 from models.creature import Creature
+
+# Create all tables if they don't exist yet.
+Base.metadata.create_all(bind=engine)
 
 # Seed data is stored in JSON files to keep this script clean and easy to update.
 # To add more servers, items or creatures, just edit the JSON files.
