@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Items — {{ character.server.name }}</h2>
+            <a href="/inventory/?user_id={{ user_id }}&character_id={{ character_id }}"
+               class="btn btn-outline-secondary btn-sm">← Back to inventory</a>
+        </div>
+
+        <!-- Search filter -->
+        <form method="get" action="/items/" class="mb-4">
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <input type="hidden" name="character_id" value="{{ character_id }}">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search"
+                       placeholder="Search by name..."
+                       value="{{ search or '' }}">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+                {% if search %}
+                <a href="/items/?user_id={{ user_id }}&character_id={{ character_id }}"
+                   class="btn btn-outline-danger">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+
+        {% if items %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="text-end">NPC price</th>
+                        <th class="text-end">Market price</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            {{ item.name }}
+                            {% if item.is_task_item %}
+                            <span class="badge bg-warning text-dark ms-1">task</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {{ '{:,}'.format(item.npc_price) if item.npc_price else '—' }}
+                        </td>
+                        <td class="text-end">
+                            {% if prices[item.id] is defined and prices[item.id].market_price %}
+                                {{ '{:,}'.format(prices[item.id].market_price) }}
+                            {% else %}
+                                <span class="text-muted">Not set</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <!-- Edit price button -->
+                            <button class="btn btn-outline-secondary btn-sm"
+                                    onclick="togglePriceForm({{ item.id }})">
+                                Edit price
+                            </button>
+
+                            <!-- Inline price form — hidden by default -->
+                            <div id="price_form_{{ item.id }}" style="display:none; margin-top: 8px;">
+                                <form method="post"
+                                      action="/items/{{ item.id }}/price"
+                                      class="d-flex gap-1">
+                                    <input type="hidden" name="user_id" value="{{ user_id }}">
+                                    <input type="hidden" name="character_id" value="{{ character_id }}">
+                                    <input type="number"
+                                           class="form-control form-control-sm"
+                                           name="market_price"
+                                           value="{% if prices[item.id] is defined and prices[item.id].market_price %}{{ prices[item.id].market_price }}{% endif %}"
+                                           placeholder="Market price"
+                                           min="0"
+                                           style="width: 120px;">
+                                    <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                    <button type="button"
+                                            class="btn btn-outline-secondary btn-sm"
+                                            onclick="togglePriceForm({{ item.id }})">Cancel</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted">No items found.</p>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    function togglePriceForm(itemId) {
+        // Show or hide the price editing form for a specific item.
+        const form = document.getElementById("price_form_" + itemId);
+        form.style.display = form.style.display === "none" ? "block" : "none";
+    }
+</script>
+{% endblock %}
