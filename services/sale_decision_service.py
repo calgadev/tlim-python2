@@ -20,7 +20,7 @@ class ItemDecision:
     item_id: int
     item_name: str
     is_task_item: bool
-    current_quantity: int
+    quantity: int
     goal_quantity: int | None
     surplus_quantity: int
     npc_buyable: bool
@@ -63,12 +63,12 @@ def calculate_decisions(
         # --- Step 1: Calculate surplus ---
         # If current quantity is below goal, keep everything.
         # If goal is NULL, the full quantity is available for sale.
-        if entry.goal_quantity is not None and entry.current_quantity < entry.goal_quantity:
+        if entry.goal_quantity is not None and entry.quantity < entry.goal_quantity:
             surplus = 0
         elif entry.goal_quantity is not None:
-            surplus = entry.current_quantity - entry.goal_quantity
+            surplus = entry.quantity - entry.goal_quantity
         else:
-            surplus = entry.current_quantity
+            surplus = entry.quantity
 
         # --- Step 2: Determine sale decision ---
         missing_market_price = False
@@ -108,14 +108,14 @@ def calculate_decisions(
         passive_gold += estimated_value
 
         # Gross value uses the full quantity, not just the surplus.
-        item_gross = entry.current_quantity * selling_price if selling_price else 0
+        item_gross = entry.quantity * selling_price if selling_price else 0
         gross_value += item_gross
 
         decisions.append(ItemDecision(
             item_id=item.id,
             item_name=item.name,
             is_task_item=item.is_task_item,
-            current_quantity=entry.current_quantity,
+            quantity=entry.quantity,
             goal_quantity=entry.goal_quantity,
             surplus_quantity=surplus,
             npc_buyable=item.npc_buyable,

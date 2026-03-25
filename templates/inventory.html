@@ -97,7 +97,7 @@
                                   title="This item can be delivered in a weekly task">task</span>
                             {% endif %}
                         </td>
-                        <td class="text-end">{{ d.current_quantity }}</td>
+                        <td class="text-end">{{ d.quantity }}</td>
                         <td class="text-end">{{ d.goal_quantity if d.goal_quantity is not none else '—' }}</td>
                         <td class="text-end">{{ d.surplus_quantity }}</td>
                         <td class="text-end">
