@@ -65,12 +65,12 @@ showing transferable knowledge rather than familiarity with a single tool.
 - [x] Template: hunt detail
 
 ### Inventory & Sale Decision Engine
-- [ ] Service: sale decision engine
-- [ ] Service: passive gold calculation
-- [ ] Router: inventory
-- [ ] Router: items
-- [ ] Template: inventory (stock, goals, sale decision)
-- [ ] Template: items and market prices
+- [x] Service: sale decision engine
+- [x] Service: passive gold calculation
+- [x] Router: inventory
+- [x] Router: items
+- [x] Template: inventory (stock, goals, sale decision)
+- [x] Template: items and market prices
 
 ## Running locally
 ```bash
@@ -99,6 +99,9 @@ Access at `http://127.0.0.1:8000`
 - Cross-links between creature and item wiki pages
 - npc_seller data via separate item_npc_prices table
 - Authentication with password
+- Items page: categories from TibiaWiki scraping, detailed table, links to item wiki pages
+- Inventory: filter by NPC seller (requires item_npc_prices table from scraping)
+- Inventory: stock goal editing on item wiki page
 
 ---
 
