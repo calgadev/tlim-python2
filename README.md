@@ -16,7 +16,7 @@ data-driven decisions about where to grind.
 | Stage | Stack | Repository | Status |
 |-------|-------|------------|--------|
 | **Stage 1** — Backend + Server-side UI | Python 3.12 · FastAPI · SQLAlchemy 2.0 · SQLite · Jinja2 | [tlim-python2](https://github.com/calgadev/tlim-python2) | ✅ Complete |
-| **Stage 2** — Backend rewrite | Java 17 · Spring Boot · Spring Data JPA · PostgreSQL · Maven | [tlim-java](https://github.com/calgadev/tlim-java) | 🔄 In progress |
+| **Stage 2** — Backend rewrite | Java 17 · Spring Boot · Spring Data JPA · PostgreSQL · Maven | [tlim-java](https://github.com/calgadev/tlim-java) | ✅ Complete |
 | **Stage 3** — Modern frontend | React · JavaScript ES6+ · React Router · Axios | tlim-frontend *(coming soon)* | ⏳ Planned |
 
 The project is intentionally developed in three stages with different stacks to demonstrate
