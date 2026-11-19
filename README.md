@@ -6,7 +6,7 @@
 ![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Complete-success?style=for-the-badge)
 
-> The first stage of a three-stage portfolio project. Stage 2 rebuilds this as a production-grade REST API in [Java / Spring Boot / PostgreSQL](https://github.com/calgadev/tlim-java). A React frontend is planned for Stage 3.
+> The first stage of a three-stage portfolio project. Stage 2 rebuilds it as a REST API in [Java / Spring Boot / PostgreSQL](https://github.com/calgadev/tlim-java), and Stage 3 puts a [React / TypeScript frontend](https://github.com/calgadev/tlim-frontend) on top of that API.
 
 ---
 
@@ -25,9 +25,9 @@ Stage 1 proves the concept with a working MVP: a server-side rendered web applic
 
 | Stage | Stack | Repository | Status |
 |---|---|---|---|
-| Stage 1 — Backend + Server-side UI | Python 3.12 · FastAPI · SQLAlchemy 2.0 · SQLite · Jinja2 | tlim-python2 | ✅ Complete |
-| Stage 2 — Backend rewrite | Java 17 · Spring Boot · Spring Data JPA · PostgreSQL · Maven | tlim-java | ✅ Complete |
-| Stage 3 — Modern frontend | React · JavaScript ES6+ · React Router · Axios | tlim-frontend (coming soon) | 🚧 In Progress |
+| Stage 1 — Backend + Server-side UI | Python 3.12 · FastAPI · SQLAlchemy 2.0 · SQLite · Jinja2 | [tlim-python2](https://github.com/calgadev/tlim-python2) *(current)* | ✅ Complete |
+| Stage 2 — REST API rewrite | Java 17 · Spring Boot 3.5 · Spring Data JPA · PostgreSQL · Flyway | [tlim-java](https://github.com/calgadev/tlim-java) | ✅ Complete (deploy pending) |
+| Stage 3 — React frontend | React 19 · TypeScript · Vite · TanStack Query · Tailwind CSS | [tlim-frontend](https://github.com/calgadev/tlim-frontend) | ✅ Complete (deploy pending) |
 
 The project is intentionally developed in three stages with different stacks to demonstrate that the same problem can be solved across different languages and technologies — showing transferable knowledge rather than familiarity with a single tool.
 
@@ -97,7 +97,7 @@ tlim-python2/
 
 ## Configuration
 
-Stage 1 uses SQLite with no external database server. No environment variables or credentials are required — the database file is created automatically when `seed.py` is run for the first time.
+Stage 1 uses SQLite with no external database server. No environment variables or credentials are required: the SQLite file and its tables are created automatically, and `seed.py` fills them with the initial data. Running it again skips rows that already exist.
 
 ---
 
@@ -122,25 +122,25 @@ python seed.py
 uvicorn main:app --reload
 ```
 
-Access at `http://127.0.0.1:8000`
+Open `http://127.0.0.1:8000/users/` to pick or create a user. The root path `/` only returns a health check (`{"status": "TLIM is running"}`).
 
 > **Note:** Running `python seed.py` is required before using the application. It creates the database and populates it with 30 servers, 20 items and 20 creatures.
 
 ---
 
 ## UI Navigation
-
-Stage 1 is a server-side rendered application — there is no REST API or Swagger UI. All functionality is accessible through the web interface:
+Stage 1 is a server-side rendered application: every route returns an HTML page or a redirect, and there is no JSON API (FastAPI's auto-generated `/docs` lists the routes, but they are not meant to be called directly). The selected user and character travel as `?user_id=` and `?character_id=` query params.
 
 | Page | Path | Description |
 |---|---|---|
-| User selection | `/` | Select or create a user |
-| Characters | `/characters` | Register and list characters |
-| Hunt import | `/hunt/import` | Paste text or upload JSON from the Hunt Analyser |
-| Hunt history | `/hunt/history` | View past sessions per character |
+| Users | `/users/` | Select or create a user |
+| Characters | `/characters/?user_id=` | Register and list characters |
+| Edit character | `/characters/{id}/edit` | Change a character's name, server or vocation |
+| Hunt import | `/hunt/?user_id=&character_id=` | Paste text or upload JSON from the Hunt Analyser |
+| Hunt history | `/hunt/history?user_id=&character_id=` | Past sessions of a character |
 | Hunt detail | `/hunt/{id}` | Full breakdown of a single session |
-| Inventory | `/inventory` | Stock levels, goals, and sale decisions |
-| Items & prices | `/items` | Item list and market price management |
+| Inventory | `/inventory/?user_id=&character_id=` | Stock levels, goals, and sale decisions |
+| Items & prices | `/items/` | Item list and market price management |
 
 ---
 
@@ -169,7 +169,7 @@ Both formats are parsed into the same internal `ParsedHunt` dataclass before per
 
 ---
 
-## Project Roadmap
+## Stage Checklists
 
 ### Stage 1 — Python / FastAPI / SQLite *(current)*
 - [x] Project structure and virtual environment
@@ -185,17 +185,36 @@ Both formats are parsed into the same internal `ParsedHunt` dataclass before per
 - [x] Market price management per server
 
 ### Stage 2 — Java / Spring Boot / PostgreSQL
-- [x] Full domain model and Flyway migrations
-- [x] JWT authentication (stateless Bearer token)
-- [x] Swagger UI with Bearer auth scheme
-- [x] Full CRUD REST API (Servers, Characters, Items, Creatures, Inventory, Hunt Sessions, Server Item Prices)
-- [x] Hunt Analyser import — text and JSON formats
-- [x] Sale Decision Engine
-- [x] TibiaWiki scraper (three-level MediaWiki API crawl)
-- [x] Admin API
+- [x] Full domain model and Flyway migrations (V1–V14)
+- [x] JWT authentication (register, login, stateless Bearer token, security filter chain)
+- [x] Swagger UI with JWT bearer auth scheme
+- [x] Official world list imported from the TibiaData API, with inactive worlds kept and flagged (`/api/servers`)
+- [x] Character CRUD API with user-scoped queries (`/api/characters`)
+- [x] Item API with name/category search and `?limit=` (`/api/items`)
+- [x] Creature API with loot tables (`/api/creatures`)
+- [x] Inventory API with stock goals (`/api/inventory`)
+- [x] Hunt Sessions API with location filter (`/api/hunt-sessions`)
+- [x] Hunt Analyser import — text and JSON — that adds the loot to the inventory (deleting the hunt reverts it)
+- [x] Server Item Prices API — per-server market prices (`/api/servers/{serverId}/item-prices`)
+- [x] Sale Decision Engine — per-character recommendations using the character's server prices
+- [x] Admin API + TibiaWiki scraper (`/api/admin`)
+- [x] Browser support for the frontend: CORS, uniform JSON error bodies, admin account from environment variables
+- [x] Unit and web-slice tests, GitHub Actions CI
 - [ ] Deploy
 
-### Stage 3 — React frontend *(planned)*
+### Stage 3 — React / TypeScript / Vite
+
+Developed in [tlim-frontend](https://github.com/calgadev/tlim-frontend).
+
+- [x] Typed API layer and TanStack Query hooks synced with the Stage 2 DTOs
+- [x] JWT login/register with expiry handling and route guards (USER / ADMIN)
+- [x] Characters with an active-character switcher
+- [x] Inventory with goals, and the sale decision view with filters and totals
+- [x] Hunt Analyser import (text or JSON), hunt history and detail
+- [x] Wiki for items and creatures (TibiaWiki data)
+- [x] Market prices per world, world list, admin scraper panel
+- [x] Vitest + Testing Library tests, route-level code splitting, GitHub Actions CI
+- [ ] Deploy
 
 ---
 
@@ -203,7 +222,7 @@ Both formats are parsed into the same internal `ParsedHunt` dataclass before per
 
 O TLIM nasceu de duas dores reais de um jogador de Tibia: saber o que fazer com o loot após uma hunt, e ter histórico estruturado de sessões para comparar onde vale mais a pena caçar.
 
-Este projeto é desenvolvido em três etapas com stacks diferentes — Python/FastAPI/SQLite, Java/Spring Boot/PostgreSQL e React — como demonstração de evolução técnica e capacidade de transferir conhecimento entre linguagens. A ideia central é mostrar que o mesmo problema pode ser resolvido com ferramentas diferentes, evidenciando raciocínio transferível em vez de familiaridade com uma única tecnologia.
+Este projeto é desenvolvido em três etapas com stacks diferentes — Python/FastAPI/SQLite, Java/Spring Boot/PostgreSQL e React/TypeScript — como demonstração de evolução técnica e capacidade de transferir conhecimento entre linguagens. A ideia central é mostrar que o mesmo problema pode ser resolvido com ferramentas diferentes, evidenciando raciocínio transferível em vez de familiaridade com uma única tecnologia.
 
 Faz parte de uma transição de carreira de Analista de Sistemas para Desenvolvedor.
 
