@@ -1,17 +1,19 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
 
-# Virtual environment
+# Virtual environments
 venv/
+.venv/
 
-# Database — local file, should not be versioned
+# Local SQLite database (created on startup, filled by seed.py)
+tlim.db
 *.db
+*.sqlite3
 
-# VSCode
+# Environment and editor files
+.env
+.env.*
 .vscode/
-
-# OS
+.idea/
 .DS_Store
-Thumbs.db
